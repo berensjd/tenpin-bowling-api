@@ -1,0 +1,20 @@
+{
+  "name": "ten-pin-bowling-api",
+  "version": "1.0.0",
+  "description": "Ten Pin Bowling API",
+  "main": "index.js",
+  "author": "Jonathan Berens",
+  "license": "MIT",
+  "dependencies": {
+    "bowling": "^1.3.9",
+    "config": "^3.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "joi": "^14.3.1",
+    "joi-objectid": "^2.0.0",
+    "lodash": "^4.17.11",
+    "mongoose": "^5.5.11",
+    "winston": "^3.2.1"
+  }
+}
