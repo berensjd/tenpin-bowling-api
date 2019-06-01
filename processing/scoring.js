@@ -97,13 +97,29 @@ class Scoring {
       this.frameScore = "pending";
   }
 
+  calcRunningTotal(lastRunningTotal) {
+    let newRunningTotal;
+    if (this.frameStatus === "open") {
+      newRunningTotal = lastRunningTotal + this.frameScore;
+    } else {
+      newRunningTotal = lastRunningTotal;
+    }
+    return newRunningTotal;
+  }
+
   /**
    * ----------------------------------------------------------------------
    * Push the ball values for the current frame into the accumulation array
    * ----------------------------------------------------------------------
    */
   buildBallValues() {
-    this.accumBallValues.push(this.ballValues);
+    this.accumBallValues = [...this.accumBallValues, ...this.ballValues];
+  }
+
+  getFrameScoreAttributes(frameNo) {
+    if (frameNo === 0) return { runningTotal: 0 };
+    const frameIndex = frameNo - 1;
+    return this.scores[frameIndex];
   }
 
   //+ ToDo
@@ -117,10 +133,8 @@ class Scoring {
    * ------------------------------------------------------------------
    */
   buildFrameScore() {
-    let lastRunningTotal;
-    let newRunningTotal;
-
     //Do we need to update the last frame score
+    /*
     if (this.frameCount > 1) {
       const { frameScore, runningTotal, status } = this.scores[
         this.scores.length - 1
@@ -129,17 +143,18 @@ class Scoring {
     } else {
       lastRunningTotal = 0;
     }
+    */
 
-    if (this.frameStatus === "open") {
-      newRunningTotal = lastRunningTotal + this.frameScore;
-    } else {
-      newRunningTotal = lastRunningTotal;
-    }
+    // Get the score attributes from the last frame
+    const { runningTotal: lastRunningTotal } = this.getFrameScoreAttributes(
+      this.frameCount - 1
+    );
 
     const frameScoreRecordSet = {
       frameScore: this.frameScore,
-      runningTotal: newRunningTotal,
-      status: this.frameStatus
+      runningTotal: this.calcRunningTotal(lastRunningTotal),
+      status: this.frameStatus,
+      totalThrows: this.accumBallValues.length
     };
     this.scores.push(frameScoreRecordSet);
   }
@@ -148,7 +163,7 @@ class Scoring {
     this.frameCount;
   }
 
-  set setFrameResult(balls = "") {
+  set setFrameResult(balls) {
     this.frameResult = balls.toLocaleUpperCase();
   }
 
@@ -169,26 +184,15 @@ class Scoring {
     return this.ballValues;
   }
 
+  get getAccumBallValues() {
+    return this.accumBallValues;
+  }
   doScoring() {
     this.parseResultSet();
-    this.calcFrameStatusScore();
     this.buildBallValues();
+    this.calcFrameStatusScore();
     this.buildFrameScore();
   }
 }
 
 module.exports = Scoring;
-
-const scoring = new Scoring();
-
-//console.log(scoring.resultSymbolToValue("X", 1));
-
-scoring.setScores = [];
-scoring.setAccumBallValues = [];
-
-//console.log(scoring.getScores);
-
-scoring.setFrameResult = "6-";
-scoring.doScoring();
-console.log(scoring.getScores);
-console.log(scoring.getBallValues);
