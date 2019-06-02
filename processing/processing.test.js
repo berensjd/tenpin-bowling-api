@@ -60,8 +60,130 @@ describe("Average Game  - Allow Scoring to Accumulate Balls Thrown and Scores", 
     expect(scoring.getScores.length).toBe(frameNo);
     expect(scoring.getAccumBallValues).toEqual(accumBallValues);
   });
+
+  test("4th Frame - Spare", () => {
+    const frameBallValues = [4, 6];
+    accumBallValues = [...accumBallValues, ...frameBallValues];
+    frameNo++;
+    scoring.setScores = scoring.getScores;
+    scoring.setFrameResult = "4/";
+    scoring.doScoring();
+    expect(scoring.getBallValues).toEqual(frameBallValues);
+    expect(scoring.getScores[frameNo - 1]).toEqual({
+      frameScore: "pending",
+      runningTotal: 27,
+      status: "spare",
+      totalThrows: 7
+    });
+    expect(scoring.getScores.length).toBe(frameNo);
+    expect(scoring.getAccumBallValues).toEqual(accumBallValues);
+  });
+
+  test("5th Frame - Strike", () => {
+    const frameBallValues = [10];
+    accumBallValues = [...accumBallValues, ...frameBallValues];
+    frameNo++;
+    scoring.setScores = scoring.getScores;
+    scoring.setFrameResult = "X";
+    scoring.doScoring();
+    expect(scoring.getBallValues).toEqual(frameBallValues);
+    expect(scoring.getScores[frameNo - 1]).toEqual({
+      frameScore: "pending",
+      runningTotal: 47,
+      status: "strike",
+      totalThrows: 8
+    });
+    expect(scoring.getScores.length).toBe(frameNo);
+    expect(scoring.getAccumBallValues).toEqual(accumBallValues);
+  });
+
+  test("6th Frame - Strike", () => {
+    const frameBallValues = [10];
+    accumBallValues = [...accumBallValues, ...frameBallValues];
+    frameNo++;
+    scoring.setScores = scoring.getScores;
+    scoring.setFrameResult = "X";
+    scoring.doScoring();
+    expect(scoring.getBallValues).toEqual(frameBallValues);
+    expect(scoring.getScores[frameNo - 1]).toEqual({
+      frameScore: "pending",
+      runningTotal: 47,
+      status: "strike",
+      totalThrows: 9
+    });
+    expect(scoring.getScores.length).toBe(frameNo);
+    expect(scoring.getAccumBallValues).toEqual(accumBallValues);
+  });
+
+  test("7th Frame - Strike", () => {
+    const frameBallValues = [10];
+    accumBallValues = [...accumBallValues, ...frameBallValues];
+    frameNo++;
+    scoring.setScores = scoring.getScores;
+    scoring.setFrameResult = "X";
+    scoring.doScoring();
+    expect(scoring.getBallValues).toEqual(frameBallValues);
+    expect(scoring.getScores[frameNo - 1]).toEqual({
+      frameScore: "pending",
+      runningTotal: 77,
+      status: "strike",
+      totalThrows: 10
+    });
+    expect(scoring.getScores.length).toBe(frameNo);
+    expect(scoring.getAccumBallValues).toEqual(accumBallValues);
+  });
+  test("8th Frame - Open", () => {
+    const frameBallValues = [3, 4];
+    accumBallValues = [...accumBallValues, ...frameBallValues];
+    frameNo++;
+    scoring.setScores = scoring.getScores;
+    scoring.setFrameResult = "34";
+    scoring.doScoring();
+    expect(scoring.getBallValues).toEqual(frameBallValues);
+    expect(scoring.getScores[frameNo - 1]).toEqual({
+      frameScore: 7,
+      runningTotal: 124,
+      status: "open",
+      totalThrows: 12
+    });
+    expect(scoring.getScores.length).toBe(frameNo);
+    expect(scoring.getAccumBallValues).toEqual(accumBallValues);
+  });
+
+  test("9th Frame - Spare", () => {
+    const frameBallValues = [7, 3];
+    accumBallValues = [...accumBallValues, ...frameBallValues];
+    frameNo++;
+    scoring.setScores = scoring.getScores;
+    scoring.setFrameResult = "7/";
+    scoring.doScoring();
+    expect(scoring.getBallValues).toEqual(frameBallValues);
+    expect(scoring.getScores[frameNo - 1]).toEqual({
+      frameScore: "pending",
+      runningTotal: 124,
+      status: "spare",
+      totalThrows: 14
+    });
+    expect(scoring.getScores.length).toBe(frameNo);
+    expect(scoring.getAccumBallValues).toEqual(accumBallValues);
+  });
+
+  test("10th Frame - Strike", () => {
+    const frameBallValues = [10, 10, 10];
+    accumBallValues = [...accumBallValues, ...frameBallValues];
+    frameNo++;
+    scoring.setScores = scoring.getScores;
+    scoring.setFrameResult = "XXX";
+    scoring.doScoring();
+    expect(scoring.getBallValues).toEqual(frameBallValues);
+    expect(scoring.getScores[frameNo - 1]).toEqual({
+      frameScore: 30,
+      runningTotal: 174,
+      status: "tenthFrame",
+      totalThrows: 17
+    });
+    expect(scoring.getScores.length).toBe(frameNo);
+    expect(scoring.getAccumBallValues).toEqual(accumBallValues);
+    console.log(scoring.getScores);
+  });
 });
-
-//console.log(scoring.resultSymbolToValue("X", 1));
-
-//console.log(scoring.getScores);

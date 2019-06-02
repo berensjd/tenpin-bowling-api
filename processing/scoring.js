@@ -1,5 +1,12 @@
 class Scoring {
   constructor() {
+    this.frameStatusOpen = "open";
+    this.frameStatusStrike = "strike";
+    this.frameStatusSpare = "spare";
+    this.frameStatusTenth = "tenthFrame";
+    this.framePendingScore = "pending";
+    this.ballsThrownOpenSpareFrame = 2;
+    this.ballsThrownStrikeFrame = 1;
     this.totalFrames = 10;
     this.totalPins = 10;
     this.strike = this.totalPins;
@@ -85,11 +92,11 @@ class Scoring {
   calcFrameStatusScore() {
     this.frameScore = this.ballValues.reduce((acc, curVal) => acc + curVal);
     if (this.frameCount < this.totalFrames) {
-      this.frameStatus = "open";
+      this.frameStatus = this.frameStatusOpen;
       if (this.frameScore === this.strike && this.ballValues.length === 1)
-        this.frameStatus = "strike";
+        this.frameStatus = this.frameStatusStrike;
       else if (this.frameScore === this.strike && this.ballValues.length === 2)
-        this.frameStatus = "spare";
+        this.frameStatus = this.frameStatusSpare;
     } else {
       this.frameStatus = "tenthFrame";
     }
@@ -99,7 +106,7 @@ class Scoring {
 
   calcRunningTotal(lastRunningTotal) {
     let newRunningTotal;
-    if (this.frameStatus === "open") {
+    if (this.frameStatus === "open" || this.frameStatus === "tenthFrame") {
       newRunningTotal = lastRunningTotal + this.frameScore;
     } else {
       newRunningTotal = lastRunningTotal;
@@ -117,14 +124,76 @@ class Scoring {
   }
 
   getFrameScoreAttributes(frameNo) {
-    if (frameNo === 0) return { runningTotal: 0 };
+    if (frameNo === 0)
+      return { frameScore: 0, runningTotal: 0, status: null, totalThrows: 0 };
     const frameIndex = frameNo - 1;
     return this.scores[frameIndex];
   }
 
-  //+ ToDo
-  //Create method to amend the currentFrameScore -2
-  // Create method to amend the currentFrameScore -1
+  amendFrameScoreAttributes(frameNo, attributes) {
+    const frameIndex = frameNo - 1;
+    this.scores[frameIndex] = attributes;
+  }
+
+  /**
+   * -----------------------------------------------------------------------
+   * Calculate the score for the past pending frames  - strike and spare
+   * and update the running total
+   * ----------------------------------------------------------------------
+   */
+  calcPendingFrames() {
+    const firstFrame = 1;
+    const secondFrame = 2;
+    let backFrame = 1;
+    let carriedForwardTotal;
+
+    if (this.frameCount === firstFrame) return;
+    if (this.frameCount > secondFrame) backFrame = 2;
+
+    for (
+      let frameNo = this.frameCount - backFrame;
+      frameNo < this.frameCount;
+      frameNo++
+    ) {
+      let ballsThrownInFrame = this.ballsThrownOpenSpareFrame;
+      let {
+        frameScore,
+        runningTotal,
+        status,
+        totalThrows
+      } = this.getFrameScoreAttributes(frameNo);
+      if (frameScore !== "pending") continue;
+      const bonusThrows = this.frameStatusMapping[status];
+      if (status === "strike") ballsThrownInFrame = this.ballsThrownStrikeFrame;
+
+      const countedBallValues = this.getAccumBallValues.slice(
+        totalThrows - ballsThrownInFrame,
+        totalThrows + bonusThrows
+      );
+
+      if (!carriedForwardTotal) carriedForwardTotal = runningTotal;
+
+      if (countedBallValues.length < bonusThrows + 1) {
+        // We have not thrown enough bonus balls to be able to calculate the score for this past frame
+        // We just need to carry forward the running total from the previous frame
+        runningTotal = carriedForwardTotal;
+      } else {
+        // We have enough bonus balls to calculate the score for this frame
+        // We also need to ensure that the newly calculated runningTotal is carried forward
+        // to the later frames
+        frameScore = countedBallValues.reduce((acc, curVal) => acc + curVal);
+        runningTotal = carriedForwardTotal + frameScore;
+        carriedForwardTotal = runningTotal;
+      }
+
+      this.amendFrameScoreAttributes(frameNo, {
+        frameScore,
+        runningTotal,
+        status,
+        totalThrows
+      });
+    }
+  }
 
   /**
    * ------------------------------------------------------------------
@@ -133,18 +202,6 @@ class Scoring {
    * ------------------------------------------------------------------
    */
   buildFrameScore() {
-    //Do we need to update the last frame score
-    /*
-    if (this.frameCount > 1) {
-      const { frameScore, runningTotal, status } = this.scores[
-        this.scores.length - 1
-      ];
-      const bonusBalls = this.frameStatusMapping[status];
-    } else {
-      lastRunningTotal = 0;
-    }
-    */
-
     // Get the score attributes from the last frame
     const { runningTotal: lastRunningTotal } = this.getFrameScoreAttributes(
       this.frameCount - 1
@@ -159,9 +216,9 @@ class Scoring {
     this.scores.push(frameScoreRecordSet);
   }
 
-  set frame(frameNo) {
-    this.frameCount;
-  }
+  //set frame(frameNo) {
+  //  this.frameCount;
+  //}
 
   set setFrameResult(balls) {
     this.frameResult = balls.toLocaleUpperCase();
@@ -191,6 +248,7 @@ class Scoring {
     this.parseResultSet();
     this.buildBallValues();
     this.calcFrameStatusScore();
+    this.calcPendingFrames();
     this.buildFrameScore();
   }
 }
