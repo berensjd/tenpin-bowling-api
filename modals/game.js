@@ -10,8 +10,6 @@ const gameSchema = new mongoose.Schema({
   results: {
     type: Array,
     required: true,
-    //minlength: 1,
-    //maxlength: 2,
     result: {
       type: Array,
       minlength: 0,
@@ -25,7 +23,7 @@ const gameSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 2
   },
-  ballValue: {
+  ballValues: {
     type: Array
   }
 });
@@ -44,13 +42,6 @@ function validatePlayers(players) {
 }
 
 function validateResultParams(resultParams) {
-  /*{
-    "_id": "5cef9189fed470164634c5e1",
-    "player": "1",
-    "score": "49"
-}
-*/
-  console.log(resultParams);
   const schema = {
     _id: Joi.objectId().required(),
     player: Joi.number()
@@ -61,12 +52,6 @@ function validateResultParams(resultParams) {
 }
 
 function validateResult(result, isLastFrame) {
-  /*{
-    "_id": "5cef9189fed470164634c5e1",
-    "player": "1",
-    "score": "49"
-}
-*/
   let schema;
   if (isLastFrame) {
     schema = {
@@ -92,24 +77,24 @@ function buildGameDocSet(enteredPlayers) {
   let ballValueEntity = [];
   for (const id in enteredPlayers) {
     playersEntity.push({ id: parseInt(id), name: enteredPlayers[id] });
-    resultsEntity.push({ id: parseInt(id), result: [] });
-    scoresEntity.push({ id: parseInt(id), score: [] });
-    ballValueEntity.push({ id: parseInt(id), ballValue: [] });
+    resultsEntity.push({ id: parseInt(id), results: [] });
+    scoresEntity.push({ id: parseInt(id), scores: [] });
+    ballValueEntity.push({ id: parseInt(id), ballValues: [] });
   }
   return {
     players: playersEntity,
     results: resultsEntity,
     scores: scoresEntity,
-    ballValue: ballValueEntity
+    ballValues: ballValueEntity
   };
 }
 
 function pickDocumentData(data, playerId, selectProps = []) {
-  let package = {};
-  package._id = data._id;
+  let docSet = {};
+  docSet._id = data._id;
   for (const current of selectProps)
-    package[current] = data[current].find(r => r.id === parseInt(playerId));
-  return package;
+    docSet[current] = data[current].find(r => r.id === parseInt(playerId));
+  return docSet;
 }
 
 exports.Game = Game;

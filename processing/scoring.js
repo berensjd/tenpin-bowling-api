@@ -1,5 +1,15 @@
 class Scoring {
   constructor() {
+    this.declare();
+  }
+
+  /*
+   * ====================================================================
+   *   DECLARE SECTION
+   * ====================================================================
+   */
+
+  declare() {
     this.frameStatusOpen = "open";
     this.frameStatusStrike = "strike";
     this.frameStatusSpare = "spare";
@@ -26,6 +36,12 @@ class Scoring {
       open: this.openBonusThrow
     };
   }
+
+  /*
+   * ====================================================================
+   *   PRIVATE METHODS
+   * ====================================================================
+   */
 
   /**
    * -------------------------------------------------------------------
@@ -93,20 +109,32 @@ class Scoring {
     this.frameScore = this.ballValues.reduce((acc, curVal) => acc + curVal);
     if (this.frameCount < this.totalFrames) {
       this.frameStatus = this.frameStatusOpen;
-      if (this.frameScore === this.strike && this.ballValues.length === 1)
+      if (
+        this.frameScore === this.strike &&
+        this.ballValues.length === this.ballsThrownStrikeFrame
+      )
         this.frameStatus = this.frameStatusStrike;
-      else if (this.frameScore === this.strike && this.ballValues.length === 2)
+      else if (
+        this.frameScore === this.strike &&
+        this.ballValues.length === this.ballsThrownOpenSpareFrame
+      )
         this.frameStatus = this.frameStatusSpare;
     } else {
-      this.frameStatus = "tenthFrame";
+      this.frameStatus = this.frameStatusTenth;
     }
-    if (this.frameStatus === "strike" || this.frameStatus === "spare")
-      this.frameScore = "pending";
+    if (
+      this.frameStatus === this.frameStatusStrike ||
+      this.frameStatus === this.frameStatusSpare
+    )
+      this.frameScore = this.framePendingScore;
   }
 
   calcRunningTotal(lastRunningTotal) {
     let newRunningTotal;
-    if (this.frameStatus === "open" || this.frameStatus === "tenthFrame") {
+    if (
+      this.frameStatus === this.frameStatusOpen ||
+      this.frameStatus === this.frameStatusTenth
+    ) {
       newRunningTotal = lastRunningTotal + this.frameScore;
     } else {
       newRunningTotal = lastRunningTotal;
@@ -130,9 +158,9 @@ class Scoring {
     return this.scores[frameIndex];
   }
 
-  amendFrameScoreAttributes(frameNo, attributes) {
+  amendFrameScoreAttributes(frameNo, newAttributeValues) {
     const frameIndex = frameNo - 1;
-    this.scores[frameIndex] = attributes;
+    this.scores[frameIndex] = newAttributeValues;
   }
 
   /**
@@ -162,9 +190,10 @@ class Scoring {
         status,
         totalThrows
       } = this.getFrameScoreAttributes(frameNo);
-      if (frameScore !== "pending") continue;
+      if (frameScore !== this.framePendingScore) continue;
       const bonusThrows = this.frameStatusMapping[status];
-      if (status === "strike") ballsThrownInFrame = this.ballsThrownStrikeFrame;
+      if (status === this.frameStatusStrike)
+        ballsThrownInFrame = this.ballsThrownStrikeFrame;
 
       const countedBallValues = this.getAccumBallValues.slice(
         totalThrows - ballsThrownInFrame,
@@ -216,9 +245,11 @@ class Scoring {
     this.scores.push(frameScoreRecordSet);
   }
 
-  //set frame(frameNo) {
-  //  this.frameCount;
-  //}
+  /*
+   * ====================================================================
+   *   SETTERS
+   * ====================================================================
+   */
 
   set setFrameResult(balls) {
     this.frameResult = balls.toLocaleUpperCase();
@@ -233,6 +264,12 @@ class Scoring {
     this.accumBallValues = values;
   }
 
+  /*
+   * ====================================================================
+   *   GETTERS
+   * ====================================================================
+   */
+
   get getScores() {
     return this.scores;
   }
@@ -244,6 +281,13 @@ class Scoring {
   get getAccumBallValues() {
     return this.accumBallValues;
   }
+
+  /*
+   * ====================================================================
+   *   PUBLIC METHODS
+   * ====================================================================
+   */
+
   doScoring() {
     this.parseResultSet();
     this.buildBallValues();

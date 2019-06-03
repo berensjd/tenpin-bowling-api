@@ -184,6 +184,52 @@ describe("Average Game  - Allow Scoring to Accumulate Balls Thrown and Scores", 
     });
     expect(scoring.getScores.length).toBe(frameNo);
     expect(scoring.getAccumBallValues).toEqual(accumBallValues);
-    console.log(scoring.getScores);
+  });
+
+  test("Final Game Scores", () => {
+    const finalGameScores = [
+      { frameScore: 0, runningTotal: 0, status: "open", totalThrows: 2 },
+      { frameScore: 7, runningTotal: 7, status: "open", totalThrows: 4 },
+      {
+        frameScore: 20,
+        runningTotal: 27,
+        status: "strike",
+        totalThrows: 5
+      },
+      { frameScore: 20, runningTotal: 47, status: "spare", totalThrows: 7 },
+      {
+        frameScore: 30,
+        runningTotal: 77,
+        status: "strike",
+        totalThrows: 8
+      },
+      {
+        frameScore: 23,
+        runningTotal: 100,
+        status: "strike",
+        totalThrows: 9
+      },
+      {
+        frameScore: 17,
+        runningTotal: 117,
+        status: "strike",
+        totalThrows: 10
+      },
+      { frameScore: 7, runningTotal: 124, status: "open", totalThrows: 12 },
+      {
+        frameScore: 20,
+        runningTotal: 144,
+        status: "spare",
+        totalThrows: 14
+      },
+      {
+        frameScore: 30,
+        runningTotal: 174,
+        status: "tenthFrame",
+        totalThrows: 17
+      }
+    ];
+
+    expect(scoring.getScores).toEqual(finalGameScores);
   });
 });
