@@ -6,10 +6,12 @@
   "author": "Jonathan Berens",
   "license": "MIT",
   "dependencies": {
+    "compression": "^1.7.4",
     "config": "^3.1.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
+    "helmet": "^3.18.0",
     "joi": "^14.3.1",
     "joi-objectid": "^2.0.0",
     "lodash": "^4.17.11",
@@ -22,7 +24,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "engines": {
     "node": "12.x"

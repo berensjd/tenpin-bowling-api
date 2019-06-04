@@ -9,6 +9,7 @@ require("./startup/cors")(app);
 require("./startup/routing")(app);
 require("./startup/db")();
 require("./startup/validation")();
+require("./startup/production")(app);
 const port = process.env.PORT || config.get("port");
 const server = app.listen(port, () =>
   winston.info(`Listening on port ${port}...`)
