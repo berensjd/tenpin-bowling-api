@@ -14,7 +14,7 @@ This has been implemented within Node.js
 
 ## Dependencies
 
-1. MongoDB \** In this implementation the database name is *tenpin* and the collection is *games\*
+1. MongoDB In this implementation the database name is _tenpin_ and the collection is _games_
 
 2. Node.js depenencies
 
@@ -82,4 +82,40 @@ Each game is stored within it own document inside the _games_ collection and has
   "_id": "hex * 24",
   "__v": 0
 }
+```
+
+Where "id" equates to a player and "\_id" equates to a single game.
+
+In the case of 2 players, each parent array - _players_ _results_ _scores_ and _ballValues_ will have 2 items. For example:
+
+```json
+"players": [
+    {
+      "id": 1,
+      "name": "A. Player1"
+    },
+     {
+      "id": 2,
+      "name": "B. Player2"
+    }
+  ]
+```
+
+The _child arrays_ _results_ _scores_ and _ballValues_ per player will build as the game progresses as shown in the following forms
+
+```json
+"results":["3/","x","45","x","ff","7/","x","34","6/","2/x"]
+"scores":[
+    {"frameScore": 20,"runningTotal": 20,"status": "spare","totalThrows": 2},
+    {"frameScore": 19,"runningTotal": 39,"status": "strike","totalThrows": 3},
+    {"frameScore": 9,"runningTotal": 48,"status": "open","totalThrows": 5},
+    {"frameScore": 10,"runningTotal": 58,"status": "strike","totalThrows": 6},
+    {"frameScore": 0,"runningTotal": 58,"status": "open","totalThrows": 8},
+    {"frameScore": 20,"runningTotal": 78,"status": "spare","totalThrows": 10},
+    {"frameScore": 17,"runningTotal": 95,"status": "strike","totalThrows": 11},
+    {"frameScore": 7,"runningTotal": 102,"status": "open","totalThrows": 13},
+    {"frameScore": 12,"runningTotal": 114,"status": "spare","totalThrows": 15},
+    {"frameScore": 20,"runningTotal": 134,"status": "tenthFrame","totalThrows": 18}
+]
+"ballValues": [3,7,10,4,5,10,0,0,7,3,10,3,4,6,4,2,8,10]
 ```
