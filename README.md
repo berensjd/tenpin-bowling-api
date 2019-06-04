@@ -57,9 +57,9 @@ The server will start on port 3900 as set within ./config/default.json
 
 ###### Start a new game - _./api/new_ (POST)
 
-     Header - Content-Type: application/json
+- Header - Content-Type: application/json
 
-     Body - for 2 players
+- Body - for 2 players
 
 ```json
 { "1": "A. Player", "2": "B. Player2" }
