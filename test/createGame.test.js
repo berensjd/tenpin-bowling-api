@@ -5,8 +5,8 @@ let _id;
 const mongoDBIdRegEx = new RegExp("^[0-9a-fA-F]{24}$");
 
 describe("Game Creation", function() {
-  beforeAll(() => {
-    server = require("../index");
+  beforeAll(async () => {
+    server = await require("../index");
   });
   afterAll(async () => {
     await Game.findByIdAndRemove(_id);
