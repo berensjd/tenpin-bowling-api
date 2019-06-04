@@ -14,7 +14,7 @@ This has been implemented within Node.js
 
 ## Dependencies
 
-1. MongoDB In this implementation the database name is _tenpin_ and the collection is _games_
+1. MongoDB - In this implementation the database name is _tenpin_ and the collection is _games_
 
 2. Node.js depenencies
 
@@ -48,6 +48,40 @@ yarn start
 ```
 
 The server will start on port 3900 as set within ./config/default.json
+
+## Consuming/Using the APIs
+
+1. Start a new game - _./api/new_ (POST)
+
+- Header - Content-Type: application/json
+
+- Body - for 2 players
+
+```json
+{ "1": "A. Player", "2": "B. Player2" }
+```
+
+- Body - for 1 player
+
+```json
+{ "1": "A. Player" }
+```
+
+- Server response
+
+```json
+{
+  "_id": "5cf64bfca7695f365b0b6b5f",
+  "players": [
+    {
+      "id": 1,
+      "name": "A. Player"
+    }
+  ]
+}
+```
+
+Where the value given under "\_id" is thos games id.
 
 ## Data Structure
 
