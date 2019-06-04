@@ -6,7 +6,7 @@
 
 2. Record a player's frame result - _./api/result/:gameId/:playerId_ (PATCH)
 
-3. Fetch a player's current score and frame by frame history - _./api/result/:gameId/:playerId_ (GET)
+3. Fetch a player's current score and frame by frame history - _./api/score/:gameId/:playerId_ (GET)
 
 4. Fetch the results/scores for a given game - _./api/history/:gameId_ (GET)
 
@@ -49,25 +49,27 @@ yarn start
 
 The server will start on port 3900 as set within ./config/default.json
 
+---
+
 ## Consuming/Using the APIs
 
 1. Start a new game - _./api/new_ (POST)
 
-- Header - Content-Type: application/json
+...Header - Content-Type: application/json
 
-- Body - for 2 players
+...Body - for 2 players
 
 ```json
 { "1": "A. Player", "2": "B. Player2" }
 ```
 
-- Body - for 1 player
+...Body - for 1 player
 
 ```json
 { "1": "A. Player" }
 ```
 
-- Server response
+...Server response
 
 ```json
 {
@@ -81,7 +83,72 @@ The server will start on port 3900 as set within ./config/default.json
 }
 ```
 
-Where the value given under "\_id" is thos games id.
+Where the value given under "\_id" is thes game's id.
+
+2. Record a player's frame result - _./api/result/:gameId/:playerId_ (PATCH)
+
+...URL: /api/result/5cf64bfca7695f365b0b6b5f/1
+
+...Where the first resquest parameter is the game's id _5cf64bfca7695f365b0b6b5f_ and the secone request parameter is the player's id
+
+...Header - Content-Type: application/json
+
+...Body
+
+```json
+{ "result": "3/" }
+```
+
+...Where the results for the first 9 frames may be entered in the pattern
+
+```
+/^[XxFf0-9-]{1}[Ff0-9-/]?$/
+```
+
+and the 10th frame takes the form
+
+```
+/^[XxFf0-9-]{1}[XxFf0-9-/]?[XxFf0-9-/]?$
+```
+
+..."Ff0"- => The ball has missed one or more of the standing pins or has ended up in the gutter
+... "Xx" => A STRIKE
+... "/" => the second ball in the frame has knocked down the reming pins - SPARE
+
+...Server response
+
+```json
+{
+  "_id": "5cf64bfca7695f365b0b6b5f",
+  "players": {
+    "id": 1,
+    "name": "A. Player"
+  },
+  "results": {
+    "id": 1,
+    "results": ["3/"]
+  }
+}
+```
+
+3. Fetch a player's current score and frame by frame history - _./api/score/:gameId/:playerId_ (GET)
+
+...URL: /api/score/5cf64bfca7695f365b0b6b5f/1
+
+...Server response
+
+```json
+[{ "frameScore": 20, "runningTotal": 20, "status": "spare", "totalThrows": 2 }]
+```
+
+4. Fetch the results/scores for a given game - _./api/history/:gameId_ (GET)
+
+...URL: /api/history/5cf64bfca7695f365b0b6b5f
+
+...Server response
+... The response is given in the format of the data structure as shown below
+
+---
 
 ## Data Structure
 
