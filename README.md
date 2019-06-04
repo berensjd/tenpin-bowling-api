@@ -19,13 +19,13 @@ This has been implemented within Node.js
 2. Node.js dependencies
 
 ```javascript
-yarn add
+$ yarn add
 ```
 
 ## Testing
 
 ```javascript
-yarn test
+$ yarn test
 ```
 
 Requires _jest_ to be installed
@@ -46,7 +46,7 @@ The completion of the end-to-end tests will tear-down the test data
 ## Start the Server
 
 ```javascript
-yarn start
+$ yarn start
 ```
 
 The server will start on port 3900 as set within ./config/default.json
@@ -55,11 +55,11 @@ The server will start on port 3900 as set within ./config/default.json
 
 ## Consuming/Using the APIs
 
-1. Start a new game - _./api/new_ (POST)
+###### Start a new game - _./api/new_ (POST)
 
-..\* Header - Content-Type: application/json
+     Header - Content-Type: application/json
 
-..\* Body - for 2 players
+     Body - for 2 players
 
 ```json
 { "1": "A. Player", "2": "B. Player2" }
@@ -87,15 +87,15 @@ The server will start on port 3900 as set within ./config/default.json
 
 Where the value given under "\_id" is the game's id.
 
-2. Record a player's frame result - _./api/result/:gameId/:playerId_ (PATCH)
+###### Record a player's frame result - _./api/result/:gameId/:playerId_ (PATCH)
 
-..\* URL: /api/result/5cf64bfca7695f365b0b6b5f/1
+     URL: /api/result/5cf64bfca7695f365b0b6b5f/1
 
-..\* Where the first request parameter is the game's id _5cf64bfca7695f365b0b6b5f_ and the second request parameter is the player's id
+     Where the first request parameter is the game's id _5cf64bfca7695f365b0b6b5f_ and the second request parameter is the player's id
 
-..\* Header - Content-Type: application/json
+     Header - Content-Type: application/json
 
-..\* Body
+     Body
 
 ```json
 { "result": "3/" }
@@ -133,7 +133,7 @@ and the 10th frame takes the form
 }
 ```
 
-3. Fetch a player's current score and frame by frame history - _./api/score/:gameId/:playerId_ (GET)
+###### Fetch a player's current score and frame by frame history - _./api/score/:gameId/:playerId_ (GET)
 
 ..\* URL: /api/score/5cf64bfca7695f365b0b6b5f/1
 
@@ -143,12 +143,12 @@ and the 10th frame takes the form
 [{ "frameScore": 20, "runningTotal": 20, "status": "spare", "totalThrows": 2 }]
 ```
 
-4. Fetch the results/scores for a given game - _./api/history/:gameId_ (GET)
+###### Fetch the results/scores for a given game - _./api/history/:gameId_ (GET)
 
-..\* URL: /api/history/5cf64bfca7695f365b0b6b5f
+     URL: /api/history/5cf64bfca7695f365b0b6b5f
 
-.._ Server response
-.._ The response is given in the format of the data structure as shown below
+    Server response
+    The response is given in the format of the data structure as shown below
 
 ---
 
