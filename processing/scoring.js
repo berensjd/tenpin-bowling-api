@@ -1,6 +1,9 @@
-class Scoring {
+const ResultSet = require("./resultSet");
+
+class Scoring extends ResultSet {
   constructor() {
-    this.declare();
+    super();
+    this.declareScoring();
   }
 
   /*
@@ -9,7 +12,7 @@ class Scoring {
    * ====================================================================
    */
 
-  declare() {
+  declareScoring() {
     this.frameStatusOpen = "open";
     this.frameStatusStrike = "strike";
     this.frameStatusSpare = "spare";
@@ -18,18 +21,9 @@ class Scoring {
     this.ballsThrownOpenSpareFrame = 2;
     this.ballsThrownStrikeFrame = 1;
     this.totalFrames = 10;
-    this.totalPins = 10;
-    this.strike = this.totalPins;
     this.spareBonusThrow = 1;
     this.strikeBonusThrow = 2;
     this.openBonusThrow = 0;
-    this.resultSymbolMapping = {
-      X: () => this.strike,
-      F: () => 0,
-      "-": () => 0,
-      "/": value => this.totalPins - value,
-      " ": () => 0
-    };
     this.frameStatusMapping = {
       strike: this.strikeBonusThrow,
       spare: this.spareBonusThrow,
@@ -42,61 +36,6 @@ class Scoring {
    *   PRIVATE METHODS
    * ====================================================================
    */
-
-  /**
-   * -------------------------------------------------------------------
-   * Transform a result symbol to a numerical ball trow value
-   * @param {*} resultSymbol
-   * @param {*} previousThrowValue
-   * -------------------------------------------------------------------
-   */
-  resultSymbolToValue(resultSymbol, previousThrowValue = 0) {
-    return this.resultSymbolMapping[resultSymbol](previousThrowValue);
-  }
-
-  /**
-   * --------------------------------------------------------------------
-   * Validates the frame result agains the total number of availble pins
-   * -------------------------------------------------------------------
-   */
-  validatePinValue() {
-    let totalValue = 0;
-    for (this.throw of this.frameResult) {
-      if (!(this.throw in this.resultSymbolMapping))
-        totalValue = totalValue + parseInt(this.throw);
-    }
-    if (totalValue > this.totalPins) return false;
-    else return true;
-  }
-
-  /**
-   * --------------------------------------------------------------------
-   * Parses the result set on the frame  - **this.frameResult**
-   * into corresponding throw values  - **this.ballValues**
-   * -------------------------------------------------------------------
-   */
-  parseResultSet() {
-    let lastThrowValue = 0;
-    let throws = [];
-    for (this.throw of this.frameResult) {
-      if (this.throw in this.resultSymbolMapping) {
-        throws.push(this.resultSymbolToValue(this.throw, lastThrowValue));
-      } else {
-        throws.push(parseInt(this.throw));
-      }
-      if (throws.length >= 1) lastThrowValue = throws[throws.length - 1];
-
-      // With the exception of the 10th Frame
-      //Ensure a strike score one strike value in the array - [10]
-      if (
-        throws.length === 1 &&
-        throws[0] === this.strike &&
-        this.frameCount < this.totalFrames
-      )
-        break;
-    }
-    this.ballValues = throws;
-  }
 
   /**
    * --------------------------------------------------------------------
@@ -251,10 +190,6 @@ class Scoring {
    * ====================================================================
    */
 
-  set setFrameResult(balls) {
-    this.frameResult = balls.toLocaleUpperCase();
-  }
-
   set setScores(scores) {
     this.scores = scores;
     this.frameCount = this.scores.length + 1;
@@ -272,10 +207,6 @@ class Scoring {
 
   get getScores() {
     return this.scores;
-  }
-
-  get getBallValues() {
-    return this.ballValues;
   }
 
   get getAccumBallValues() {
