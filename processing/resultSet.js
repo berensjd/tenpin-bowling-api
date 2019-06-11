@@ -11,12 +11,18 @@ class ResultSet {
   declareResultSet() {
     this.totalPins = 10;
     this.strike = this.totalPins;
-    this.validRegularResultPattern = "^[XF0-9-]{1}[F0-9-/]?$";
+
+    this.validRegularResultPatterns = [
+      { pattern: "^[X]{1}$", validateBallThrowIndex: null },
+      { pattern: "^[F0-9-][/]$", validateBallThrowIndex: null },
+      { pattern: "^[F0-9-][F0-9-]$", validateBallThrowIndex: [0, 2] }
+    ];
     this.validTenthFrameResultPatterns = [
-      { pattern: "[X]{3}", validateBallThrowIndex: null },
-      { pattern: "[XX[F0-9-]", validateBallThrowsIndex: null },
-      { pattern: "X[F0-9-][F0-9-/]", validateBallThrowsIndex: [1, 2] },
-      { pattern: "[F0-9][/][XF0-9]", validateBallThrowsIndex: [1, 2] }
+      { pattern: "[X]{3}$", validateBallThrowIndex: null },
+      { pattern: "^XX[F0-9-]$", validateBallThrowIndex: null },
+      { pattern: "^X[F0-9-][F0-9-/]$", validateBallThrowIndex: [1, 3] },
+      { pattern: "^[F0-9-][/][XF0-9-]$", validateBallThrowIndex: null },
+      { pattern: "^[F0-9-][F0-9-]$", validateBallThrowIndex: [0, 2] }
     ];
     this.resultSymbolMapping = {
       X: () => this.strike,
@@ -43,6 +49,21 @@ class ResultSet {
     return this.resultSymbolMapping[resultSymbol](previousThrowValue);
   }
 
+  /**
+   * --------------------------------------------------------------------
+   * Validates the frame result against the total number of availble pins
+   * -------------------------------------------------------------------
+   */
+  validatePinValue(frameResult) {
+    let totalValue = 0;
+    for (let ballThrow of frameResult) {
+      if (!(ballThrow in this.resultSymbolMapping))
+        totalValue = totalValue + parseInt(ballThrow);
+    }
+    if (totalValue > this.totalPins) return false;
+    else return true;
+  }
+
   /*
    * ====================================================================
    *   SETTERS
@@ -67,32 +88,42 @@ class ResultSet {
    *   PUBLIC METHODS
    * ====================================================================
    */
-  //Public Method in develpoment
-  validateResult(isTenthFrame = false) {
-    if (!isTenthFrame) {
-      const ballThrowPattern = new RegExp(this.validRegularResultPattern);
-      if (!ballThrowPattern.test(this.frameResult)) return false;
-      return this.validatePinValue();
-    } else {
-      //todo - perform deep pattern matching onj the 10th frame
-      //todo - depending on the given match perform addition ball pair value checks
-    }
-  }
 
   /**
    * --------------------------------------------------------------------
-   * Validates the frame result agains the total number of availble pins
+   * Validate the entered frame result set
    * -------------------------------------------------------------------
    */
-  validatePinValue() {
-    let totalValue = 0;
-    for (let ballThrow of this.frameResult) {
-      if (!(ballThrow in this.resultSymbolMapping))
-        totalValue = totalValue + parseInt(ballThrow);
+  validateResult(frameResult, isTenthFrame = false) {
+    frameResult = frameResult.toLocaleUpperCase();
+
+    let isValidResult = false;
+    const resultPatternSet = isTenthFrame
+      ? this.validTenthFrameResultPatterns
+      : this.validRegularResultPatterns;
+
+    for (let currentTest of resultPatternSet) {
+      const { pattern, validateBallThrowIndex } = currentTest;
+      const ballThrowPattern = new RegExp(pattern);
+      if (ballThrowPattern.test(frameResult)) {
+        //We have found a valid matching result pattern
+        //Based on this result do we need to do any addition validation
+        if (validateBallThrowIndex) {
+          const testThrowPair = frameResult.substring(
+            validateBallThrowIndex[0],
+            validateBallThrowIndex[1]
+          );
+          isValidResult = this.validatePinValue(testThrowPair);
+        } else {
+          isValidResult = true;
+        }
+        break;
+      }
     }
-    if (totalValue > this.totalPins) return false;
-    else return true;
+
+    return isValidResult;
   }
+
   /**
    * --------------------------------------------------------------------
    * Parses the result set on the frame  - **this.frameResult**

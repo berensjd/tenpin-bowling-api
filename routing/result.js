@@ -43,16 +43,15 @@ router.patch("/:_id/:player", async (req, res) => {
   const { result } = req.body;
 
   const scoring = new Scoring();
-  scoring.setFrameResult = result;
-  if (!scoring.validatePinValue())
+  if (!scoring.validateResult(result, isLastFrame))
     return res
       .status(400)
-      .send("The total result for this frame exceeds the total number of pins");
+      .send("The submitted result set is invalid for this frame");
 
   //Calcualate frame score and any pending past frames
+  scoring.setFrameResult = result;
   scoring.setScores = playerScores.scores;
   scoring.setAccumBallValues = playerBallValues.ballValues;
-  scoring.setFrameResult = result;
   scoring.doScoring();
 
   playerResults.results.push(result);
