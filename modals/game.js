@@ -1,4 +1,4 @@
-const Joi = require("joi");
+const Joi = require("@hapi/joi");
 const mongoose = require("mongoose");
 const gameSchema = new mongoose.Schema({
   players: {
@@ -27,6 +27,9 @@ const gameSchema = new mongoose.Schema({
     type: Array
   }
 });
+
+//mongoose.set("useFindAndModify", false);
+
 const Game = mongoose.model("game", gameSchema);
 function validatePlayers(players) {
   const schema = {

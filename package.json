@@ -6,13 +6,13 @@
   "author": "Jonathan Berens",
   "license": "MIT",
   "dependencies": {
+    "@hapi/joi": "^15.0.3",
     "compression": "^1.7.4",
     "config": "^3.1.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "helmet": "^3.18.0",
-    "joi": "^14.3.1",
     "joi-objectid": "^2.0.0",
     "lodash": "^4.17.11",
     "mongoose": "^5.5.11",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
+    "jest": "^24.8.0",
     "supertest": "^4.0.2"
   },
   "scripts": {
